@@ -72,7 +72,7 @@ remove_file 'Guardfile'
 copy_file @path + 'Guardfile', 'Guardfile'
 
 # Haml views
-copy_file @path + 'lib/templates/haml/scaffold/_form.html.haml', 'lib/templates/haml/scaffold/_form.html.haml'
+# copy_file @path + 'lib/templates/haml/scaffold/_form.html.haml', 'lib/templates/haml/scaffold/_form.html.haml'
 copy_file @path + 'lib/templates/haml/scaffold/edit.html.haml', 'lib/templates/haml/scaffold/edit.html.haml'
 copy_file @path + 'lib/templates/haml/scaffold/index.html.haml', 'lib/templates/haml/scaffold/index.html.haml'
 copy_file @path + 'lib/templates/haml/scaffold/new.html.haml', 'lib/templates/haml/scaffold/new.html.haml'
@@ -87,7 +87,18 @@ copy_file @path + 'app/views/layouts/application.html.haml', 'app/views/layouts/
 
 remove_file 'app/assets/javascripts/application.js'
 copy_file @path + 'app/assets/javascripts/application.js', 'app/assets/javascripts/application.js'
+copy_file @path + 'app/assets/javascripts/modernizr.js', 'app/assets/javascripts/modernizr.js'
+copy_file @path + 'app/assets/stylesheets/print/custom-print.css.scss', 'app/assets/stylesheets/print/custom-print.css.scss'
+copy_file @path + 'app/assets/stylesheets/print/framework_and_overrides.css.scss', 'app/assets/stylesheets/print/framework_and_overrides.css.scss'
+copy_file @path + 'app/assets/stylesheets/screen/custom-screen.css.scss', 'app/assets/stylesheets/screen/custom-screen.css.scss'
+copy_file @path + 'app/assets/stylesheets/screen/framework_and_overrides.css.scss', 'app/assets/stylesheets/screen/framework_and_overrides.css.scss'
 copy_file @path + 'app/assets/stylesheets/application.css.scss', 'app/assets/stylesheets/application.css.scss'
+copy_file @path + 'app/assets/stylesheets/print.css.scss', 'app/assets/stylesheets/print.css.scss'
+
+copy_file @path + 'app/views/layouts/_messages.html.haml', 'app/views/layouts/_messages.html.haml'
+copy_file @path + 'app/views/layouts/_navigation.html.haml', 'app/views/layouts/_navigation.html.haml'
+copy_file @path + 'app/views/layouts/_navigation_links.html.haml', 'app/views/layouts/_navigation_links.html.haml'
+copy_file @path + 'app/views/layouts/_user_links.html.haml', 'app/views/layouts/_user_links.html.haml'
 
 # SimpleForm
 generate 'simple_form:install --foundation'
@@ -202,7 +213,7 @@ copy_file @path + 'app/controllers/application_controller.rb', 'app/controllers/
 # High Voltage
 create_file 'config/initializers/high_voltage.rb' do <<-RUBY
 HighVoltage.configure do |config|
-  config.home_page = 'index'
+  config.home_page = 'home'
   config.route_drawer = HighVoltage::RouteDrawers::Root
 end
 

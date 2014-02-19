@@ -1,0 +1,45 @@
+// Place all the styles related to the reports controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+#report_form_wrapper {
+  display: none;
+}
+
+.barchart {
+  height: 0.1em;
+  padding: 0em;
+  // margin: 0.625em 0;
+  width: 100%;
+  visibility:hidden;
+}
+
+table.chart {
+  width: 100%;
+  border-width: 0;
+  margin: 0px 0;
+}
+
+table tr.even, table tr.alt, table tr:nth-of-type(even) {
+  background: #FFF;
+}
+
+td.percent {
+  width: 20%;
+}
+
+td.chart {
+  font-size: 18px;
+  // margin-bottom: 20px;
+  padding: 0 0 0px 0;
+}
+
+p.percentage {
+  font-size: 20px !important;
+  font-weight: 300;
+  // margin-bottom: 17px;
+  color: #6f6f6f;
+}
+
+#print_button {
+  float: right;
+}
