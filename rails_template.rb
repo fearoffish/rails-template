@@ -56,7 +56,6 @@ end
 # Database
 rake 'db:drop:all'
 rake 'db:create:all'
-rake 'db:migrate'
 run 'rails g rspec:install'
 run 'mkdir spec/support spec/models spec/routing'
 run 'bundle exec guard init spec'
