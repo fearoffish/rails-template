@@ -21,6 +21,10 @@ gem 'simple_form'
 gem 'devise'
 gem 'devise_cas_authenticatable'
 
+gem 'high_voltage'
+
+gem 'haml-rails'
+
 gem_group :development do
   gem 'rails_layout'
   gem 'rspec-rails'
@@ -194,6 +198,17 @@ copy_file @path + 'app/views/layouts/email.html.haml', 'app/views/layouts/email.
 # Controller
 remove_file 'app/controllers/application_controller.rb'
 copy_file @path + 'app/controllers/application_controller.rb', 'app/controllers/application_controller.rb'
+
+# High Voltage
+create_file 'config/initializers/high_voltage.rb' do <<-RUBY
+HighVoltage.configure do |config|
+  config.home_page = 'index'
+  config.route_drawer = HighVoltage::RouteDrawers::Root
+end
+
+RUBY
+end
+copy_file @path + 'app/views/pages/home.html.haml', 'app/views/pages/home.html.haml'
 
 # Title Helper
 inject_into_file 'app/helpers/application_helper.rb', :before => 'end' do <<-RUBY
