@@ -9,7 +9,7 @@
 
 require 'securerandom'
 
-@path = 'https://raw.github.com/fearoffish/rails-template/master/files/'
+@path = ENV['LOCAL_FILES'] == '1' ? "#{Dir.pwd}/files/" : 'https://raw.github.com/fearoffish/rails-template/master/files/'
 
 ## Gems
 gsub_file 'Gemfile', /gem 'sqlite3'/, ''
