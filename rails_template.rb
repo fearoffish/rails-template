@@ -101,6 +101,7 @@ copy_file @path + 'app/views/layouts/_navigation.html.haml', 'app/views/layouts/
 copy_file @path + 'app/views/layouts/_navigation_links.html.haml', 'app/views/layouts/_navigation_links.html.haml'
 copy_file @path + 'app/views/layouts/_user_links.html.haml', 'app/views/layouts/_user_links.html.haml'
 
+remove_file 'app/helpers/application_helper.rb'
 copy_file @path + 'app/helpers/application_helper.rb', 'app/helpers/application_helper.rb'
 
 # SimpleForm
@@ -117,7 +118,7 @@ gsub_file 'config/routes.rb', /  devise_for :users/ do <<-RUBY
 RUBY
 end
 
-# admin.rb, user.rb
+# user.rb
 remove_file 'app/models/user.rb'
 copy_file @path + 'app/models/user.rb', 'app/models/user.rb'
 
@@ -131,6 +132,8 @@ generate 'cancan:ability'
 
 # CAS Authenticate
 inject_into_file 'config/initializers/devise.rb', :before => "\nend" do <<-RUBY
+
+
   config.cas_base_url = ENV['CAS_URL'] || "http://casinoapp.dev"
   config.cas_username_column = "email"
   config.cas_logout_url_param = "destination"
@@ -286,13 +289,17 @@ gsub_file 'config/initializers/devise.rb', /'please-change-me-at-config-initiali
 
 # ENV config
 key = SecureRandom.hex(128)
-create_file '.envrc' do <<-RUBY
+
+puts "Place the following in a .envrc file"
+puts <<-RUBY
 export DEVISE_SECRET=#{key}
 export DEVISE_MAIL_SENDER='info@viverehealth.com'
 export CAS_URL='http://casinoapp.dev'
 RUBY
-end
 
 git :init
 git :add => '.'
 git :commit => '-m "close #1 Install Rails "'
+
+puts
+puts "Change the company logo by searching for COMPANY_LOGO"
