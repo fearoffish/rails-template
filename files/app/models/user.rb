@@ -4,7 +4,7 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable
 
 
-  attr_accessible :email, :password, :password_confirmation, :remember_me, :name, :role_id
+  # attr_accessible :email, :password, :password_confirmation, :remember_me, :name, :role_id
 
   EMAIL_REGEX = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i
   validates :email,
@@ -14,11 +14,5 @@ class User < ActiveRecord::Base
   validates_presence_of :name
 
   belongs_to :role
-
-  has_attached_file :avatar,
-                    :default_url => "/assets/default-avatar.gif",
-                    :styles => {
-                        :small => "120x120#",
-                    }
 
 end
