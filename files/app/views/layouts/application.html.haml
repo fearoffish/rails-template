@@ -2,18 +2,17 @@
 %html
   %head
     %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}/
-    %title <%= content_for?(:title) ? yield(:title) : "Change Me" %>
-    <meta name="description" content="<%= content_for?(:description) ? yield(:description) : "Change Me" %>">
-    <%= stylesheet_link_tag "application" %>
-    <%= stylesheet_link_tag "print", media: 'print' %>
-    <%= csrf_meta_tags %>
+    %title= content_for?(:title) ? yield(:title) : "Change Me"
+    %meta( name="description" content=(content_for?(:description) ? yield(:description) : "Change Me") )
+    = stylesheet_link_tag "application"
+    = stylesheet_link_tag "print", media: 'print'
+    = csrf_meta_tags
   %body
     .row
       .large-12.columns
         %header
-          <%= render 'layouts/navigation' %>
+          = render 'layouts/navigation'
         %main{:role => "main"}
-          <%= render 'layouts/messages' %>
-          <%= yield %>
-    <%# Foundation 5 won't work when application.js is included in HEAD %>
-    <%= javascript_include_tag "application" %>
+          = render 'layouts/messages'
+          = yield
+    = javascript_include_tag "application"
