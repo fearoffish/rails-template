@@ -101,6 +101,8 @@ copy_file @path + 'app/views/layouts/_navigation.html.haml', 'app/views/layouts/
 copy_file @path + 'app/views/layouts/_navigation_links.html.haml', 'app/views/layouts/_navigation_links.html.haml'
 copy_file @path + 'app/views/layouts/_user_links.html.haml', 'app/views/layouts/_user_links.html.haml'
 
+copy_file @path + 'app/helpers/application_helper.rb', 'app/helpers/application_helper.rb'
+
 # SimpleForm
 generate 'simple_form:install --foundation'
 
