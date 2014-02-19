@@ -1,9 +1,10 @@
+- content = content_for?(:description) ? yield(:description) : "Change Me"
 !!!
 %html
   %head
     %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}/
     %title= content_for?(:title) ? yield(:title) : "Change Me"
-    %meta( name="description" content=(content_for?(:description) ? yield(:description) : "Change Me") )
+    %meta( name="description" content=content )
     = stylesheet_link_tag "application"
     = stylesheet_link_tag "print", media: 'print'
     = csrf_meta_tags

@@ -20,6 +20,7 @@ gem 'simple_form'
 
 gem 'devise'
 gem 'devise_cas_authenticatable'
+gem 'cancan'
 
 gem 'high_voltage'
 
