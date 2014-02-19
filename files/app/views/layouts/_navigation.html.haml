@@ -1,0 +1,9 @@
+%nav{ "class" => "top-bar", "data-topbar" => style_with_staging_color}
+%ul.title-area
+  %li.name
+    = link_to 'Home', root_path
+    - if Rails.env.staging? || Rails.env.development?
+      STAGING
+.top-bar-section
+  %ul.right
+    = render 'layouts/user_links'

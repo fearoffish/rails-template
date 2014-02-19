@@ -1,33 +1,30 @@
-# encoding: utf-8
-require "application_responder"
 class ApplicationController < ActionController::Base
-  helper :all
-  self.responder = ApplicationResponder
-  respond_to :html, :json, :xml
-  WillPaginate.per_page = 10
+  # Prevent CSRF attacks by raising an exception.
+  # For APIs, you may want to use :null_session instead.
+  protect_from_forgery with: :exception
+  # before_filter :protect
 
-  before_filter :authenticate_user!
+  # def protect
+  #   @ips = ['127.0.0.1', '192.168.1.0/24']
+  #   allowed = false
+  #   # Convert remote IP to an integer.
+  #   bremote_ip = request.remote_ip.split('.').map(&:to_i).pack('C*').unpack('N').first
+  #   @ips.each do |ipstring|
+  #     ip, mask = ipstring.split '/'
+  #     # Convert tested IP to an integer.
+  #     bip = ip.split('.').map(&:to_i).pack('C*').unpack('N').first
+  #     # Convert mask to an integer, and assume /32 if not specified.
+  #     mask = mask ? mask.to_i : 32
+  #     bmask = ((1 << mask) - 1) << (32 - mask)
+  #     if bip & bmask == bremote_ip & bmask
+  #       allowed = true
+  #       break
+  #     end
+  #   end
 
-  protect_from_forgery
-
-  rescue_from CanCan::AccessDenied do |exception|
-    flash[:error] = "Yetkisiz erişim."
-    redirect_to root_url
-  end
-
-  def after_sign_in_path_for(resource_or_scope)
-    unless current_admin
-      super
-    else
-      admins_dashboard_index_path
-    end
-  end
-
-  def after_sign_out_path_for(resource_or_scope)
-    unless current_admin
-      super
-    else
-      admins_dashboard_index_path
-    end
-  end
+  #   if not allowed
+  #     render :text => "You are unauthorized"
+  #     return
+  #   end
+  # end
 end

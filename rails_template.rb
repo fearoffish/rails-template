@@ -7,117 +7,59 @@
 # and Rails::Generators::Actions
 # http://github.com/rails/rails/blob/master/railties/lib/rails/generators/actions.rb
 
-@path = 'https://raw.github.com/lab2023/rails-template/master/files/'
+require 'securerandom'
 
-if yes?('Would you like to use the Sphinx search system? (yes/no)')
-  sphinx_flag = true
-else
-  sphinx_flag = false
-end
+@path = 'https://raw.github.com/fearoffish/rails-template/master/files/'
 
-if sphinx_flag
-  puts "Adding thinking-sphinx gem ..."
-  gem 'thinking-sphinx'
-end
+## Gems
+gsub_file 'Gemfile', /gem 'sqlite3'/, ''
 
-if yes?('Would you like to use resque for background job? (yes/no)')
-  resque_flag = true
-else
-  resque_flag = false
-end
-
-if resque_flag
-  puts "Adding resque gem ..."
-  gem 'resque'
-  puts "Creating lib/tasks/resque.rake ..."
-  create_file 'lib/tasks/resque.rake' do <<-'FILE'
-  require "resque/tasks"
-  task "resque:setup" => :environment
-  FILE
-  end
-end
-
-if yes?('Would you like to use resque_mailer for sending email with background job? (yes/no)')
-  resque_mailer = true
-else
-  resque_mailer = false
-end
-
-if resque_mailer
-  puts "Adding resque_mailer gem  ..."
-  gem 'resque_mailer'
-  puts "Adding god gem for resque production ..."
-  gem 'god', :require => false
-  puts "Creating config/initializers/resque_mailer.rb ..."
-  create_file 'config/initializers/resque_mailer.rb' do <<-'FILE'
-  class AsyncMailer < ActionMailer::Base
-    include Resque::Mailer
-    layout 'email'
-  end
-  FILE
-  end
-end
-
-# Gems
-gem 'will_paginate'
-gem 'bootstrap-will_paginate'
-gem "will-paginate-i18n", "~> 0.1.7"
-gem 'cancan'
-gem 'devise'
-gem 'haml-rails'
-gem 'responders'
-gem 'show_for'
+gem 'pg'
+gem 'foundation-rails'
 gem 'simple_form'
-gem 'i18n'
-gem 'bootstrap-datepicker-rails'
-gem 'paperclip'
-gem 'whenever', :require => false
-gem 'ransack'
-gem 'client_side_validations'
-gem 'client_side_validations-simple_form'
-gem 'turbolinks'
-gem 'strong_parameters'
 
-gem_group :assets do
-  gem 'bootstrap-sass'
-  gem 'compass-rails'
-  gem 'jquery-ui-rails'
-end
+gem 'devise'
+gem 'devise_cas_authenticatable'
 
-gem_group :development, :test do
-  gem 'sqlite3'
-  gem "rspec-rails", "~> 2.6"
-  gem "guard-rspec"
-  gem 'rb-fchange', :require => false if RUBY_PLATFORM =~ /mswin/i
-  gem 'rb-inotify', :require => false if RUBY_PLATFORM =~ /linux/i
-  gem 'rb-fsevent', :require => false if RUBY_PLATFORM =~ /darwin/i
-  gem 'growl', '1.0.3', :require => false if RUBY_PLATFORM =~ /darwin/i
-  gem 'sextant'
-  gem 'meta_request', '0.2.1'
-  gem "better_errors"
-end
-
-gem_group :test do
+gem_group :development do
+  gem 'rails_layout'
+  gem 'rspec-rails'
+  gem 'guard-rspec', require: false
   gem "factory_girl_rails", "~> 4.0"
-  gem "capybara"
-  gem 'shoulda-matchers'
-end
-
-gem_group :production do
-  gem 'pg', :require => false
 end
 
 # Bundle
 run 'bundle install'
-rake 'db:drop'
-rake 'db:create'
+
+# Database config
+remove_file 'config/database.yml'
+create_file 'config/database.yml' do <<-RUBY
+development:
+  adapter: postgresql
+  encoding: unicode
+  database: #{app_name}_development
+  pool: 5
+  username: jamievandyke
+  password:
+
+test:
+  adapter: postgresql
+  encoding: unicode
+  database: #{app_name}_test
+  pool: 5
+  username: jamievandyke
+  password:
+
+RUBY
+end
+
+# Database
+rake 'db:drop:all'
+rake 'db:create:all'
 rake 'db:migrate'
-run 'wheneverize .'
 run 'rails g rspec:install'
 run 'mkdir spec/support spec/models spec/routing'
-run 'guard init spec'
-
-# Lib
+run 'bundle exec guard init spec'
 
 # Spec
 remove_file 'spec/spec_helper.rb'
@@ -133,119 +75,79 @@ get @path + 'lib/templates/haml/scaffold/index.html.haml', 'lib/templates/haml/s
 get @path + 'lib/templates/haml/scaffold/new.html.haml', 'lib/templates/haml/scaffold/new.html.haml'
 get @path + 'lib/templates/haml/scaffold/show.html.haml', 'lib/templates/haml/scaffold/show.html.haml'
 
-# controller
-get @path + 'lib/templates/rails/responders_controller/controller.rb', 'lib/templates/rails/responders_controller/controller.rb'
-get @path + 'lib/templates/rails/strong_parameters_controller/controller.rb', 'lib/templates/rails/strong_parameters_controller/controller.rb'
-
 # rake
 get @path + 'lib/tasks/dev.rake', 'lib/tasks/dev.rake'
-
-# SettingsLogic
-get @path + 'settings_logic/config.yml', 'config/application.yml'
 
 # Application Layout
 remove_file 'app/views/layouts/application.html.erb'
 get @path + 'app/views/layouts/application.html.haml', 'app/views/layouts/application.html.haml'
-get @path + 'app/views/layouts/admins/application.html.haml', 'app/views/layouts/admins/application.html.haml'
 
 remove_file 'app/assets/javascripts/application.js'
 get @path + 'app/assets/javascripts/application.js', 'app/assets/javascripts/application.js'
 get @path + 'app/assets/stylesheets/application.css.scss', 'app/assets/stylesheets/application.css.scss'
 
 # SimpleForm
-generate 'simple_form:install --bootstrap'
+generate 'simple_form:install --foundation'
 
 # Devise
 generate 'devise:install'
+get @path + 'app/controllers/devise/confirmations_controller.rb', 'app/controllers/devise/confirmations_controller.rb'
 gsub_file 'config/application.rb', /:password/, ':password, :password_confirmation'
-generate 'devise user name:string'
-gsub_file 'app/models/user.rb', /:remember_me/, ':remember_me, :role_id, :avatar, :name'
+generate 'devise User'
 
 gsub_file 'config/routes.rb', /  devise_for :users/ do <<-RUBY
   devise_for :users
 RUBY
 end
 
-gsub_file 'config/initializers/devise.rb', /please-change-me-at-config-initializers-devise@example.com/, 'CHANGEME@example.com'
+gsub_file 'config/initializers/devise.rb', /\nend/ do <<-RUBY
+  ## CAS Authentication
+  config.cas_base_url = ENV['CASINOAPP_URL'] || "http://casinoapp.dev"
+  config.cas_username_column = "email"
+  config.cas_logout_url_param = "destination"
+  config.cas_destination_logout_param_name = "service"
+  config.cas_create_user = true
 
-inside 'app/views/devise' do
-  get @path + 'app/views/devise/confirmations/new.html.haml', 'confirmations/new.html.haml'
-  get @path + 'app/views/devise/mailer/confirmation_instructions.html.haml', 'mailer/confirmation_instructions.html.haml'
-  get @path + 'app/views/devise/mailer/reset_password_instructions.html.haml', 'mailer/reset_password_instructions.html.haml'
-  get @path + 'app/views/devise/mailer/unlock_instructions.html.haml', 'mailer/unlock_instructions.html.haml'
-  get @path + 'app/views/devise/passwords/edit.html.haml', 'passwords/edit.html.haml'
-  get @path + 'app/views/devise/passwords/new.html.haml', 'passwords/new.html.haml'
-  get @path + 'app/views/devise/registrations/edit.html.haml', 'registrations/edit.html.haml'
-  get @path + 'app/views/devise/registrations/new.html.haml', 'registrations/new.html.haml'
-  get @path + 'app/views/devise/sessions/new.html.haml', 'sessions/new.html.haml'
-  get @path + 'app/views/devise/shared/_links.haml', 'shared/_links.html.haml'
-  get @path + 'app/views/devise/unlocks/new.html.haml', 'unlocks/new.html.haml'
-end
-
-# Admins
-generate 'devise admin name:string'
-gsub_file 'config/routes.rb', /  devise_for :admins/ do <<-RUBY
-   devise_for :admins, :controllers => { :sessions => "admins/sessions", :registrations =>  "admins/registrations"}
-   namespace :admins do
-    resources :dashboard
+  config.warden do |manager|
+    manager.failure_app = DeviseCasAuthenticatable::SingleSignOut::WardenFailureApp
   end
+end
 RUBY
 end
-get @path + 'app/controllers/admins/application_controller.rb', 'app/controllers/admins/application_controller.rb'
-get @path + 'app/controllers/admins/dashboard_controller.rb', 'app/controllers/admins/dashboard_controller.rb'
-get @path + 'app/controllers/admins/sessions_controller.rb', 'app/controllers/admins/sessions_controller.rb'
-get @path + 'app/controllers/admins/registrations_controller.rb', 'app/controllers/admins/registrations_controller.rb'
-get @path + 'app/views/admins/dashboard/index.html.haml', 'app/views/admins/dashboard/index.html.haml'
-get @path + 'app/views/admins/sessions/new.html.haml', 'app/views/admins/sessions/new.html.haml'
-get @path + 'app/views/admins/registrations/edit.html.haml', 'app/views/admins/registrations/edit.html.haml'
 
-# admin.rb, user.rb and profile avatar image
+# admin.rb, user.rb
 remove_file 'app/models/user.rb'
-remove_file 'app/models/admin.rb'
 get @path + 'app/models/user.rb', 'app/models/user.rb'
-get @path + 'app/models/admin.rb', 'app/models/admin.rb'
-get 'https://github.com/lab2023/rails-template/raw/master/files/app/assets/images/default-avatar.gif', 'app/assets/images/default-avatar.gif'
 
 rake 'db:migrate'
 
 # Role Table
 generate 'model role name:string'
 
-# Responder
-generate 'responders:install'
-
-# Responder
-generate 'show_for:install'
-
 # CanCan
 generate 'cancan:ability'
 
-# Client Side
-generate 'client_side_validations:install'
+# CAS Authenticate
+inject_into_file 'config/devise.rb', :before => 'end' do <<-RUBY
+  config.cas_base_url = ENV['CAS_URL'] || "http://casinoapp.dev"
+  config.cas_username_column = "email"
+  config.cas_logout_url_param = "destination"
+  config.cas_destination_logout_param_name = "service"
+  config.cas_create_user = true
 
-# Welcome and Dashboard
-generate(:controller, 'pages')
-
-inject_into_file 'app/controllers/pages_controller.rb', :before => 'end' do <<-RUBY
-  skip_before_filter :authenticate_user!, :only => :index
-
-  def index
-
+  config.warden do |manager|
+    manager.failure_app = DeviseCasAuthenticatable::SingleSignOut::WardenFailureApp
   end
-
 
 RUBY
 end
-
-route "root :to => 'pages#index'"
-get @path + 'app/views/pages/index.html.haml', 'app/views/pages/index.html.haml'
 
 # Locale Settings
 inject_into_file 'config/application.rb', :after => 'class Application < Rails::Application' do <<-RUBY
 
 
-    config.time_zone = 'Istanbul'
-    config.i18n.default_locale = :tr
+    config.time_zone = 'UTC'
+    config.i18n.default_locale = :en
 
 
 RUBY
@@ -291,47 +193,27 @@ get @path + 'config/locales/validates_timeliness.tr.yml', 'config/locales/valida
 # Mail Settings
 inject_into_file 'config/environments/development.rb', :after => 'config.assets.debug = true' do <<-RUBY
 
-  #Mail Settings
+  # Mail Settings
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-      :address              => "smtp.gmail.com",
-      :port                 => 587,
-      :domain               => 'gmail.com',
-      :user_name            => 'rubyonrailsrailsmailtest@gmail.com',
-      :password             => 'secret',
-      :authentication       => 'plain',
-      :enable_starttls_auto => true
-  }
 RUBY
 end
 
 inject_into_file 'config/environments/production.rb', :after => 'config.active_support.deprecation = :notify' do <<-RUBY
 
-  #Mail Settings
-  config.action_mailer.default_url_options = { :host => 'www.example.com' }
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-      :address              => "smtp.gmail.com",
-      :port                 => 587,
-      :domain               => 'gmail.com',
-      :user_name            => 'user@gmail.com',
-      :password             => 'secret',
-      :authentication       => 'plain',
-      :enable_starttls_auto => true
-  }
+  # Mail Settings
+  config.action_mailer.default_url_options = { :host => 'viverehealth.com' }
 
 RUBY
 end
 
-#Email layout
+# Email layout
 get @path + 'app/views/layouts/email.html.haml', 'app/views/layouts/email.html.haml'
-# Controller
 
+# Controller
 remove_file 'app/controllers/application_controller.rb'
 get @path + 'app/controllers/application_controller.rb', 'app/controllers/application_controller.rb'
 
-#Title Helper
+# Title Helper
 inject_into_file 'app/helpers/application_helper.rb', :before => 'end' do <<-RUBY
   def title(page_title)
     content_for(:title) { page_title }
@@ -382,10 +264,24 @@ nbproject
 GIT
 end
 
+# README.md
+get @path + 'README.md', 'README.md'
+
 remove_file 'app/assets/stylesheets/application.css'
 rake 'db:migrate'
-generate 'paperclip user avatar'
 rake 'dev:setup'
+
+gsub_file 'config/initializers/devise.rb', /config.secret_key = .*/, "config.secret_key = ENV['DEVISE_SECRET']"
+gsub_file 'config/initializers/devise.rb', /'please-change-me-at-config-initializers-devise@example.com'/, "config.mailer_sender = ENV['DEVISE_MAIL_SENDER']"
+
+# ENV config
+key = SecureRandom.hex(128)
+create_file '.envrc' do <<-RUBY
+export DEVISE_SECRET=#{key}
+export DEVISE_MAIL_SENDER='info@viverehealth.com'
+export CAS_URL='http://casinoapp.dev'
+RUBY
+end
 
 git :init
 git :add => '.'
