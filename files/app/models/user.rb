@@ -1,6 +1,6 @@
 class User < ActiveRecord::Base
 
-  devise :database_authenticatable, :registerable,
+  devise :cas_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
   EMAIL_REGEX = /\A[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\z/i
