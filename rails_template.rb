@@ -75,9 +75,6 @@ get @path + 'lib/templates/haml/scaffold/index.html.haml', 'lib/templates/haml/s
 get @path + 'lib/templates/haml/scaffold/new.html.haml', 'lib/templates/haml/scaffold/new.html.haml'
 get @path + 'lib/templates/haml/scaffold/show.html.haml', 'lib/templates/haml/scaffold/show.html.haml'
 
-# devise
-get @path + 'app/controllers/devise/confirmations_controller.rb', 'app/controllers/devise/confirmations_controller.rb'
-
 # rake
 get @path + 'lib/tasks/dev.rake', 'lib/tasks/dev.rake'
 
@@ -94,9 +91,9 @@ generate 'simple_form:install --foundation'
 
 # Devise
 generate 'devise:install'
+get @path + 'app/controllers/devise/confirmations_controller.rb', 'app/controllers/devise/confirmations_controller.rb'
 gsub_file 'config/application.rb', /:password/, ':password, :password_confirmation'
 generate 'devise User'
-gsub_file 'app/models/user.rb', /:remember_me/, ':remember_me, :role_id, :avatar, :name'
 
 gsub_file 'config/routes.rb', /  devise_for :users/ do <<-RUBY
   devise_for :users
@@ -118,21 +115,7 @@ end
 RUBY
 end
 
-inside 'app/views/devise' do
-  get @path + 'app/views/devise/confirmations/new.html.haml', 'confirmations/new.html.haml'
-  get @path + 'app/views/devise/mailer/confirmation_instructions.html.haml', 'mailer/confirmation_instructions.html.haml'
-  get @path + 'app/views/devise/mailer/reset_password_instructions.html.haml', 'mailer/reset_password_instructions.html.haml'
-  get @path + 'app/views/devise/mailer/unlock_instructions.html.haml', 'mailer/unlock_instructions.html.haml'
-  get @path + 'app/views/devise/passwords/edit.html.haml', 'passwords/edit.html.haml'
-  get @path + 'app/views/devise/passwords/new.html.haml', 'passwords/new.html.haml'
-  get @path + 'app/views/devise/registrations/edit.html.haml', 'registrations/edit.html.haml'
-  get @path + 'app/views/devise/registrations/new.html.haml', 'registrations/new.html.haml'
-  get @path + 'app/views/devise/sessions/new.html.haml', 'sessions/new.html.haml'
-  get @path + 'app/views/devise/shared/_links.haml', 'shared/_links.html.haml'
-  get @path + 'app/views/devise/unlocks/new.html.haml', 'unlocks/new.html.haml'
-end
-
-# admin.rb, user.rb and profile avatar image
+# admin.rb, user.rb
 remove_file 'app/models/user.rb'
 get @path + 'app/models/user.rb', 'app/models/user.rb'
 
@@ -158,23 +141,6 @@ inject_into_file 'config/devise.rb', :before => 'end' do <<-RUBY
 
 RUBY
 end
-
-# Welcome and Dashboard
-generate(:controller, 'pages')
-
-inject_into_file 'app/controllers/pages_controller.rb', :before => 'end' do <<-RUBY
-  skip_before_filter :authenticate_user!, :only => :index
-
-  def index
-
-  end
-
-
-RUBY
-end
-
-route "root :to => 'pages#index'"
-get @path + 'app/views/pages/index.html.haml', 'app/views/pages/index.html.haml'
 
 # Locale Settings
 inject_into_file 'config/application.rb', :after => 'class Application < Rails::Application' do <<-RUBY
